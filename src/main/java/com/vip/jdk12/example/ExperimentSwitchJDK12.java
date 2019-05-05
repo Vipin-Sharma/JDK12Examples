@@ -3,15 +3,7 @@ package com.vip.jdk12.example;
 import java.util.ArrayList;
 
 /**
- * Extend the switch statement so that it can be used as either a statement or an expression
- * <p>
- * An expression is a construct made up of variables, operators, and method invocations ... that evaluates to a single value.
- * <p>
- * Arrow syntax doesnt always mean it is switch expression, similarly colon syntax doesnt always mean it is statement.
- *
- * Fallthrough : All 3 ways introduced with JDK12 are fallthrough safe.
- * Switch expressions are exhaustive for Enum, in case we miss some case for Enum there is compilation error.
- *
+ * Switch expression JDK 12, preview feature.
  */
 
 public class ExperimentSwitchJDK12 {
@@ -83,23 +75,82 @@ public class ExperimentSwitchJDK12 {
         double bonus;
         switch (designation) {
             case "MD": {
-                int temp = 0;
+                double temp = 1.;
                 bonus = 50.0 + temp;
                 break;
             }
             case "ED": {
-                int temp = 1;
+                double temp = 1.;
                 bonus = 25.0 + temp;
                 break;
             }
             case "Manager":
                 throw new RuntimeException("I dont know what is Manager designation");
-            default:
+            default: {
                 bonus = 10.0;
                 break;
+            }
         }
         return bonus;
     }
+
+    private static double getYearlyBonus_statement_arrowSyntax(String designation) {
+        double bonus;
+        switch (designation) {
+            case "MD" -> {
+                double temp = 1.;
+                bonus = 50.0 + temp;
+            }
+            case "ED" -> {
+                double temp = 1.;
+                bonus = 25.0 + temp;
+            }
+            case "Manager" ->
+                throw new RuntimeException("I dont know what is Manager designation");
+            default -> {
+                bonus = 10.0;
+            }
+        }
+        return bonus;
+    }
+
+
+    private static double getYearlyBonus_expresion_arrowSyntax(String designation) {
+        double bonus = switch (designation) {
+            case "MD" -> 50.0;
+            case "ED" -> {
+                double temp = 1.;
+                break 25.0 + temp;
+            }
+            case "Manager" -> throw new RuntimeException("I dont know what is Manager designation");
+            default -> {
+                break 10.0;
+            }
+        };
+        return bonus;
+    }
+
+
+    /**
+     * 1.   Only change is converting arrow into :
+     */
+
+    private static double getYearlyBonus_expresion_colonSyntax(String designation) {
+        double bonus = switch (designation) {
+            case "MD" : break 50.0;
+            case "ED" : {
+                double temp = 1.;
+                break 25.0 + temp;
+            }
+            case "Manager" : throw new RuntimeException("I dont know what is Manager designation");
+            default : {
+                break 10.0;
+            }
+        };
+        return bonus;
+    }
+
+
 
     /**
      * 1.   This is switch statement using arrow syntax, JDK12 specific.
@@ -130,6 +181,53 @@ public class ExperimentSwitchJDK12 {
         return bonus;
     }
 
+
+    private static double getYearlyBonusExperienceMatters_statement_arrowSyntax_convert_into_Expression(Employee employee) {
+        double bonus =
+                switch (employee.getDesignation()) {
+                    case "MD" -> {
+                        double experienceBasedBonus = employee.getExperienceYears() * .5;
+                        break 70.0 + experienceBasedBonus;
+                    }
+                    case "ED" -> {
+                        double experienceBasedBonus = employee.getExperienceYears() * .4;
+                        break 50.0 + experienceBasedBonus;
+                    }
+                    case "VP", "SeniorAssociate" -> {
+                        double experienceBasedBonus = employee.getExperienceYears() * .3;
+                        break 40.0 + experienceBasedBonus;
+                    }
+                    default -> {
+                        double experienceBasedBonus = employee.getExperienceYears() * .2;
+                        break 30.0 + experienceBasedBonus;
+                    }
+                };
+        return bonus;
+    }
+
+
+    /**
+     * 1.   This is switch expression using arrow syntax, DK12 specific.
+     * 2.   Arrow (->) points to returned value.
+     * 3.   Code right to arrow -> can be expression, a block, or a throw statement. This is example of switch expression
+     *      where right to -> we have block and expression and Exception all 3 cases.
+     *      In case 40.0 looks confusing for an expression you can write 40.0 + 0.0 it may make sense now.
+     * 4.   Using arrow syntax (->) we get assurance of no fallthrough.
+     * 5.   Multiple command separated labels supported like here:   case "VP", "SeniorAssociate" -> 40;
+     */
+    private static double getYearlyBonus_expression_arrowSyntax(String designation) {
+        return switch (designation) {
+            case "MD" -> 70.0;
+            case "ED" -> 50.0;
+            case "VP", "SeniorAssociate" -> {
+                System.out.println("We printed inside block");
+                break 40.0;
+            }
+            case "Manager" -> throw new RuntimeException("I dont know what is Manager designation");
+            default -> 30.0;
+        };
+    }
+
     /**
      * 1.   This is Switch expression using old colon syntax, JDK12 specific.
      * 2.   Here we are using block {} in case of VP and traditional approach in case of SeniorAssociate which is not block,
@@ -156,28 +254,6 @@ public class ExperimentSwitchJDK12 {
         };
     }
 
-    /**
-     * 1.   This is switch expression using arrow syntax, DK12 specific.
-     * 2.   Arrow (->) points to returned value.
-     * 3.   Code right to arrow -> can be expression, a block, or a throw statement. This is example of switch expression
-     *      where right to -> we have block and expression and Exception all 3 cases.
-     *      In case 40.0 looks confusing for an expression you can write 40.0 + 0.0 it may make sense now.
-     * 4.   Using arrow syntax (->) we get assurance of no fallthrough.
-     * 5.   Multiple command separated labels supported like here:   case "VP", "SeniorAssociate" -> 40;
-     */
-    private static double getYearlyBonus_expression_arrowSyntax(String designation) {
-        return switch (designation) {
-            case "MD" -> 70.0;
-            case "ED" -> 50.0;
-            case "VP", "SeniorAssociate" -> {
-                System.out.println("We printed inside block");
-                break 40.0;
-            }
-            case "Manager" -> throw new RuntimeException("I dont know what is Manager designation");
-            default -> 30.0;
-        };
-    }
-
 
     /**
      * 1.   This is example of Old Switch statement using break, works in JDK8 as well.
@@ -198,32 +274,3 @@ public class ExperimentSwitchJDK12 {
 
 }
 
-class Employee {
-    private int id;
-    private String name;
-    private String designation;
-    private int experienceYears;
-
-    public Employee(int id, String name, String designation, int experienceYears) {
-        this.id = id;
-        this.name = name;
-        this.designation = designation;
-        this.experienceYears = experienceYears;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public int getExperienceYears() {
-        return experienceYears;
-    }
-}
