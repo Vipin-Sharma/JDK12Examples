@@ -1,6 +1,6 @@
 package com.vip.jdk12.example;
 
-class Employee {
+public class Employee {
     private int id;
     private String name;
     private String designation;

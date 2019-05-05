@@ -1,8 +1,14 @@
-package com.vip.jdk12.example;
+package com.vip.jdk12.example.switchexpression;
+
+import com.vip.jdk12.example.Employee;
 
 import java.util.ArrayList;
 
-public class SwitchExpressionColonSyntax {
+/**
+ * Switch expression JDK 12, preview feature.
+ */
+
+public class SwitchStatementArrowSyntax {
 
     public static void main(String[] args) {
         Employee vipin = new Employee(1, "Vipin", "MD", 10);
@@ -24,28 +30,30 @@ public class SwitchExpressionColonSyntax {
 
         System.out.println("");
         employees.forEach(employee ->
-                System.out.println(employee.getName() + " gets Bonus " + getYearlyBonus_expresion_colonSyntax(employee.getDesignation()) + " %"));
+                System.out.println(employee.getName() + " gets Bonus " + getYearlyBonus_statement_arrowSyntax(employee.getDesignation()) + " %"));
 
 
     }
 
-    /**
-     * 1.   Only change is converting arrow into :
-     */
 
-    private static double getYearlyBonus_expresion_colonSyntax(String designation) {
-        double bonus = switch (designation) {
-            case "MD": {
-                break 50.0 + 1.;
-            }
-            case "ED": {
+    private static double getYearlyBonus_statement_arrowSyntax(String designation) {
+        double bonus;
+        switch (designation) {
+            case "MD" -> {
                 double temp = 1.;
-                break 25.0 + temp;
+                bonus = 50.0 + temp;
             }
-            case "VP", "SeniorAssociate": break 20.0;
-            case "Manager": throw new RuntimeException("I dont know what is Manager designation");
-            default: break 10.0;
-        };
+            case "ED" -> {
+                double temp = 1.;
+                bonus = 25.0 + temp;
+            }
+            case "VP", "SeniorAssociate" ->
+                bonus= 20.0;
+            case "Manager" -> throw new RuntimeException("I dont know what is Manager designation");
+            default -> {
+                bonus = 10.0;
+            }
+        }
         return bonus;
     }
 }

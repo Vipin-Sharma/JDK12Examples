@@ -1,4 +1,6 @@
-package com.vip.jdk12.example;
+package com.vip.jdk12.example.switchexpression;
+
+import com.vip.jdk12.example.Employee;
 
 import java.util.ArrayList;
 
