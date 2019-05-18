@@ -8,6 +8,14 @@ import java.util.ArrayList;
  * Switch expression JDK 12, preview feature.
  */
 
+enum Designation{
+    MD,
+    ED,
+    VP,
+    SeniorAssociate,
+    Associate;
+}
+
 public class ExperimentSwitchJDK12 {
 
     public static void main(String[] args) {
@@ -67,6 +75,27 @@ public class ExperimentSwitchJDK12 {
 
 
     }
+
+
+    private static double getYearlyBonus_expression_arrow_enum(Designation designation) {
+        return switch(designation){
+            case MD -> 50.0 + 1.0;
+            case ED -> 24.0 + 1.0;
+            case VP, SeniorAssociate ->  20.0;
+            default -> 10;
+        };
+    }
+
+    /**
+     * Compilation failure case.
+     */
+    /*private static double getYearlyBonus_expression_arrow_enum_compilationerror(Designation designation) {
+        return switch(designation){
+            case MD -> 50.0 + 1.0;
+            case ED -> 24.0 + 1.0;
+
+        };
+    }*/
 
 
     /**
